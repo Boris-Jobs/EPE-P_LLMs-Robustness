@@ -40,8 +40,8 @@ def make_arrow(root, dataset_root, single_plot=False, missing_type=None):
     for idx, genre in enumerate(GENRE_CLASS):
         GENRE_CLASS_DICT[genre] = idx
 
-    image_root = os.path.join(root, "images")
-    label_root = os.path.join(root, "labels")
+    image_root = os.path.join(root, "dataset")
+    label_root = os.path.join(root, "dataset")
 
     with open(f"{root}/split.json", "r") as fp:
         split_sets = json.load(fp)
