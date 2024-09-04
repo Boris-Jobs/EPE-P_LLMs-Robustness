@@ -70,8 +70,8 @@ class BaseDataset(torch.utils.data.Dataset):
 
         self.index_mapper = dict()
 
-        if 'text_aug' in self.table.column_names:
-            self.aug_texts = self.table['text_aug'].to_pandas().tolist()
+        if "text_aug" in self.table.column_names:
+            self.aug_texts = self.table["text_aug"].to_pandas().tolist()
         else:
             self.aug_texts = None
 
@@ -84,8 +84,7 @@ class BaseDataset(torch.utils.data.Dataset):
         else:
             for i in range(len(self.table)):
                 self.index_mapper[i] = (i, None)
-        
-        
+
     @property
     def corpus(self):
         return [text for texts in self.all_texts for text in texts]

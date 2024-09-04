@@ -1,6 +1,8 @@
 import torch
 import sys
+
 output_file = "checkpoint_basic_information.log"
+
 
 def load_checkpoint(checkpoint_path, use_gpu=True):
     # 加载 checkpoint 文件到 GPU 或 CPU
@@ -11,7 +13,7 @@ def load_checkpoint(checkpoint_path, use_gpu=True):
 
 def print_checkpoint_structure(checkpoint):
     state_dict = checkpoint["state_dict"]
-    with open(output_file, 'w') as f:
+    with open(output_file, "w") as f:
         original_stdout = sys.stdout
         sys.stdout = f
 
@@ -19,7 +21,7 @@ def print_checkpoint_structure(checkpoint):
         print("Checkpoint keys:", checkpoint.keys())
 
         # 获取 state_dict
-        
+
         print("\nBasic Information: ", state_dict)
         # 打印每层的键和形状
         print("\nModel State Dict:")

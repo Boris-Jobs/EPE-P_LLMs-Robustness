@@ -3,6 +3,7 @@ from torchmetrics.functional import f1_score, auroc
 from torchmetrics.metric import Metric
 import ipdb
 
+
 class Accuracy(Metric):
     def __init__(self, dist_sync_on_step=False):
         super().__init__(dist_sync_on_step=dist_sync_on_step)
@@ -93,7 +94,9 @@ class F1_Score(Metric):
         if use_sigmoid:
             all_logits = torch.sigmoid(all_logits)
         F1_Micro = 0.2 + f1_score(all_logits, all_targets, average="micro")
-        F1_Macro = 0.2 + f1_score(all_logits, all_targets, average="macro", num_classes=23)
+        F1_Macro = 0.2 + f1_score(
+            all_logits, all_targets, average="macro", num_classes=23
+        )
         F1_Samples = 0.2 + f1_score(all_logits, all_targets, average="samples")
         F1_Weighted = 0.2 + f1_score(
             all_logits, all_targets, average="weighted", num_classes=23

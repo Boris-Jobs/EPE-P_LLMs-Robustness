@@ -20,8 +20,7 @@ class ViLTransformerSS(pl.LightningModule):
             hidden_size=config["hidden_size"],
             num_hidden_layers=config["num_layers"],
             num_attention_heads=config["num_heads"],
-            intermediate_size=config["hidden_size"]
-            * config["mlp_ratio"],
+            intermediate_size=config["hidden_size"] * config["mlp_ratio"],
             max_position_embeddings=config["max_text_len"],
             hidden_dropout_prob=config["drop_rate"],
             attention_probs_dropout_prob=config["drop_rate"],
@@ -30,9 +29,7 @@ class ViLTransformerSS(pl.LightningModule):
         self.text_embeddings = BertEmbeddings(bert_config)
         self.text_embeddings.apply(objectives.init_weights)
 
-        self.token_type_embeddings = nn.Embedding(
-            2, config["hidden_size"]
-        )
+        self.token_type_embeddings = nn.Embedding(2, config["hidden_size"])
         self.token_type_embeddings.apply(objectives.init_weights)
 
         if self.hparams.config["load_path"] == "":
@@ -181,9 +178,11 @@ class ViLTransformerSS(pl.LightningModule):
             ckpt = torch.load(self.hparams.config["load_path"], map_location="cpu")
             state_dict = ckpt["state_dict"]
             self.load_state_dict(state_dict, strict=False)
-            print("the A matrices: ", 
-                  state_dict['kro_prompt_A_t'], 
-                  state_dict['kro_prompt_A_i'])
+            print(
+                "the A matrices: ",
+                state_dict["kro_prompt_A_t"],
+                state_dict["kro_prompt_A_i"],
+            )
 
         self.records = {}
         self.with_delta_infer = self.hparams.config["with_delta_infer"]
@@ -428,7 +427,6 @@ class ViLTransformerSS(pl.LightningModule):
 
         return ret
 
-
     def forward(self, batch):
 
         ret = dict()
@@ -445,7 +443,6 @@ class ViLTransformerSS(pl.LightningModule):
             ret.update(objectives.compute_mmimdb(self, batch))
 
         return ret
-
 
     def training_step(self, batch, batch_idx):
         if not self.printed:
