@@ -122,7 +122,6 @@ class ViLTransformerSS(pl.LightningModule):
                 for param in self.token_type_embeddings.parameters():
                     param.requires_grad = False
 
-
         vilt_utils.set_metrics(self)
         self.current_tasks = list()
 

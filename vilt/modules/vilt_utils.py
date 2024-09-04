@@ -19,6 +19,7 @@ from vilt.gadgets.my_metrics import (
 )
 import os
 
+
 def set_metrics(pl_module):
     for split in ["train", "val"]:
         for k, v in pl_module.hparams.config["loss_names"].items():
@@ -47,19 +48,17 @@ def set_metrics(pl_module):
                 setattr(pl_module, f"{split}_{k}_loss", Scalar())
 
 
-
 def test_ablation(pl_module, loss_name, res):
     test_ratio = pl_module.hparams.config["test_ratio"]
     exp_name = pl_module.hparams.config["test_exp_name"]
     test_type = pl_module.hparams.config["test_type"]
     records = f"missing ratio: {test_ratio}, " + res
     record_file = f"./records/{loss_name}/{loss_name}_{exp_name}_on_missing_{test_type}"
-    
+
     os.makedirs(os.path.dirname(record_file), exist_ok=True)
 
     with open(record_file, "a+") as f:
         f.write(records + "\n")
-
 
 
 def epoch_wrapup(pl_module):

@@ -121,11 +121,12 @@ def task_finetune_hateful_memes():
     max_steps = None
     warmup_steps = 0.1
     draw_false_image = 0
-    learning_rate = 1e-2 
+    learning_rate = 1e-2
     val_check_interval = 0.11
     weight_decay = 2e-2
-    max_text_len = 128    
-    
+    max_text_len = 128
+
+
 @ex.named_config
 def task_finetune_mmimdb():
     exp_name = "finetune_mmimdb"

@@ -1,5 +1,7 @@
 import argparse
 
+# python make_arrow.py --dataset [DATASET] --root [YOUR_DATASET_ROOT]
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset", default="mmimdb", type=str, help="Datasets.")
 parser.add_argument("--root", default="./datasets", type=str, help="Root of datasets")
