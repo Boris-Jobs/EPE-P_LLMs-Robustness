@@ -1,3 +1,4 @@
 vilt/vilt_200k_mlm_itm.ckpt
 datasets/
 vilt/bert-base
+*.pkl

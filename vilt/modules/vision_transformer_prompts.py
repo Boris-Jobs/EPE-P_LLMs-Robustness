@@ -301,9 +301,7 @@ class Attention(nn.Module):
         self.num_heads = num_heads
         head_dim = dim // num_heads
         # NOTE scale factor was wrong in my original version, can set manually to be compat with prev weights
-        self.scale = (
-            qk_scale or head_dim**-0.5
-        )  # 未提供前者时使用后者防止指数爆炸的影响，故缩放
+        self.scale = qk_scale or head_dim**-0.5  # 未提供前者时使用后者防止指数爆炸的影响，故缩放
 
         self.qkv = nn.Linear(
             dim, dim * 3, bias=qkv_bias
@@ -522,9 +520,9 @@ class VisionTransformer(nn.Module):
         drop_rate = drop_rate if config is None else config["drop_rate"]
 
         self.num_classes = num_classes
-        self.num_features = self.embed_dim = (
-            embed_dim  # num_features for consistency with other models
-        )
+        self.num_features = (
+            self.embed_dim
+        ) = embed_dim  # num_features for consistency with other models
         norm_layer = norm_layer or partial(nn.LayerNorm, eps=1e-6)
         self.add_norm_before_transformer = add_norm_before_transformer
 

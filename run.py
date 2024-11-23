@@ -39,9 +39,7 @@ def main(_config):  # variables from vilt.config.config().
         name=f'{exp_name}_seed{_config["seed"]}_from_{_config["load_path"].split("/")[-1][:-5]}',  # [:-5] means delete '.ckpt'.
     )
 
-    lr_callback = pl.callbacks.LearningRateMonitor(
-        logging_interval="step"
-    )  # 监控学习率
+    lr_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")  # 监控学习率
     callbacks = [checkpoint_callback, lr_callback]
     # from pytorch_lightning.profiler import SimpleProfiler
     # profiler = SimpleProfiler()

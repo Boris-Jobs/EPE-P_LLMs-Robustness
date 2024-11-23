@@ -8,9 +8,7 @@ from transformers.models.bert.modeling_bert import BertPredictionHeadTransform
 class Pooler(nn.Module):
     def __init__(self, hidden_size):
         super().__init__()
-        self.dense = nn.Linear(
-            hidden_size, hidden_size
-        )  # 全连接层，输入输出均为隐藏层大小
+        self.dense = nn.Linear(hidden_size, hidden_size)  # 全连接层，输入输出均为隐藏层大小
         self.activation = nn.Tanh()  # Tanh激活函数应用于全连接层输出
 
     def forward(self, hidden_states):

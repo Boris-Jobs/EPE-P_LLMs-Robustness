@@ -276,7 +276,6 @@ def compute_itm_wpa(pl_module, batch):
 
 
 def compute_mmimdb(pl_module, batch):
-
     phase = "train" if pl_module.training else "val"
     infer = pl_module.infer(batch, mask_text=False, mask_image=False)
 
@@ -302,7 +301,6 @@ def compute_mmimdb(pl_module, batch):
 
 
 def compute_hatememes(pl_module, batch):
-
     phase = "train" if pl_module.training else "val"
     infer = pl_module.infer(batch, mask_text=False, mask_image=False)
 

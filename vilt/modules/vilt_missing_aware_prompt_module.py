@@ -62,7 +62,6 @@ class ViLTransformerSS(pl.LightningModule):
             and not self.hparams.config["test_only"]
             and not self.hparams.config["finetune_first"]
         ):
-
             ckpt = torch.load(self.hparams.config["load_path"], map_location="cpu")
             state_dict = ckpt["state_dict"]
 
@@ -428,7 +427,6 @@ class ViLTransformerSS(pl.LightningModule):
         return ret
 
     def forward(self, batch):
-
         ret = dict()
         if len(self.current_tasks) == 0:
             ret.update(self.infer(batch))
