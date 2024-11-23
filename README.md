@@ -15,5 +15,5 @@ Missing modalities are a common challenge in real-world multimodal learning scen
 5. For testing, set `test_only=True` which is `False` in default for training.
 
 # Acknowledgements
-Our code is based on [missing-aware-prompts (MAP)](https://github.com/YiLunLee/missing_aware_prompts?tab=readme-ov-file) and [Vision-and-Language Transformer (ViLT)](https://github.com/dandelin/ViLT.git).
+Our code is based on [missing-aware-prompts (MAP)](https://github.com/YiLunLee/missing_aware_prompts?tab=readme-ov-file) and [Evidential Deep Learning (EDL)](https://muratsensoy.github.io/uncertainty.html).
 
