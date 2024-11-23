@@ -147,10 +147,10 @@ default_cfgs = {
     ),
     "vit_base_patch32_384": _cfg(
         url="https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-vitjx/jx_vit_base_p32_384-830016f5.pth",
-        input_size=(3, 384, 384),  # 3通道、384*384像素
-        mean=(0.5, 0.5, 0.5),  # 图像归一化均值
-        std=(0.5, 0.5, 0.5),  # 图像归一化标准差
-        crop_pct=1.0,  # 图像中心裁剪比例，此处1.0即为不裁剪
+        input_size=(3, 384, 384),
+        mean=(0.5, 0.5, 0.5),
+        std=(0.5, 0.5, 0.5),
+        crop_pct=1.0,
     ),
     "vit_large_patch16_224": _cfg(
         url="https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-vitjx/jx_vit_large_p16_224-4ee7a4dc.pth",
@@ -290,56 +290,41 @@ class Mlp(nn.Module):
 class Attention(nn.Module):
     def __init__(
         self,
-        dim,  # dim=embed_dim=768
+        dim,
         num_heads=8,
         qkv_bias=False,
         qk_scale=None,
         attn_drop=0.0,
-        proj_drop=0.0,  # 注意力层和投影层的dropout比率
+        proj_drop=0.0,
     ):
         super().__init__()
         self.num_heads = num_heads
         head_dim = dim // num_heads
         # NOTE scale factor was wrong in my original version, can set manually to be compat with prev weights
-        self.scale = qk_scale or head_dim**-0.5  # 未提供前者时使用后者防止指数爆炸的影响，故缩放
+        self.scale = qk_scale or head_dim**-0.5
 
-        self.qkv = nn.Linear(
-            dim, dim * 3, bias=qkv_bias
-        )  # (32, 196, 768) -> (32, 196, 2304) FC layer
+        self.qkv = nn.Linear(dim, dim * 3, bias=qkv_bias)
         self.attn_drop = nn.Dropout(attn_drop)
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
     def forward(self, x, mask=None, prompts=None, learnt_p=False, prompt_type="input"):
-        """
-        输入参数讲解：
-            x: 输入张量，形状为 (B, N, C)，其中 B 是批量大小，N 是序列长度，C 是特征维度。
-            mask: 可选的注意力掩码，形状为 (B, N)。
-            prompts: 可选的提示张量，形状为 (B, P, C)，其中 P 是提示的长度。
-            learnt_p: 是否使用学习的提示。
-            prompt_type: 提示的类型，可以是 'input' 或 'attention'。
-        """
-
-        B, N, C = x.shape  # 批量大小、序列长度、特征维度
+        B, N, C = x.shape
         if prompts is None or prompt_type == "input" or prompt_type == "kronecker":
-            # origin attention
             qkv = (
                 self.qkv(x)
                 .reshape(B, N, 3, self.num_heads, C // self.num_heads)
-                .permute(
-                    2, 0, 3, 1, 4
-                )  # (B, N, 3, self.num_heads, C // self.num_heads) -> (3, B, self.num_heads, N, C // self.num_heads)
+                .permute(2, 0, 3, 1, 4)
             )
             q, k, v = (
                 qkv[0],
                 qkv[1],
                 qkv[2],
-            )  # make torchscript happy (cannot use tensor as tuple)
+            )
             start_pos = mask.size(1) - N
             mask = mask[:, start_pos:]
 
         elif prompt_type == "attention":
-            # prefix prompt tuning
             P = prompts.size(1)
             qkv = self.qkv(x).reshape(B, N, 3, C)
 
@@ -396,7 +381,7 @@ class Block(nn.Module):
         Block_times += 1
 
         super().__init__()
-        self.norm1 = norm_layer(dim)  # 层归一化
+        self.norm1 = norm_layer(dim)
         self.attn = Attention(
             dim,
             num_heads=num_heads,
@@ -404,18 +389,18 @@ class Block(nn.Module):
             qk_scale=qk_scale,
             attn_drop=attn_drop,
             proj_drop=drop,
-        )  # Multi-Head Self-Attention
+        )
 
         # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
-        self.norm2 = norm_layer(dim)  # 第二个层归一化
+        self.norm2 = norm_layer(dim)
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(
             in_features=dim,
             hidden_features=mlp_hidden_dim,
             act_layer=act_layer,
             drop=drop,
-        )  # 前馈全连接层
+        )
 
     def forward(self, x, mask=None, prompts=None, learnt_p=False, prompt_type="input"):
         if prompts is not None and (
@@ -477,23 +462,21 @@ class VisionTransformer(nn.Module):
 
     def __init__(
         self,
-        img_size=224,  # 224*224 pixels
-        patch_size=16,  # 16*16 is a patch of the pic
-        in_chans=3,  # 3 RGB
+        img_size=224,
+        patch_size=16,
+        in_chans=3,
         num_classes=1000,
-        embed_dim=768,  # 768 = 16*16*3
-        depth=12,  # 堆叠的Block模块数量
+        embed_dim=768,
+        depth=12,
         num_heads=12,
         mlp_ratio=4.0,
         qkv_bias=True,
         qk_scale=None,
-        representation_size=None,
         drop_rate=0.0,
         attn_drop_rate=0.0,
         drop_path_rate=0.0,
         norm_layer=None,
         add_norm_before_transformer=False,
-        no_patch_embed_bias=False,
         config=None,
     ):
         """
@@ -563,11 +546,6 @@ class VisionTransformer(nn.Module):
             ]
         )
         self.norm = norm_layer(embed_dim)
-
-        # for masking input token to enforce model learn the missing data circumstance
-        #         if config is not None and config["loss_names"]["mmimdb"] > 0:
-        #             self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
-        #             trunc_normal_(self.mask_token, std=0.02)
 
         trunc_normal_(self.pos_embed, std=0.02)
         trunc_normal_(self.cls_token, std=0.02)

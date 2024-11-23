@@ -6,17 +6,8 @@ from transformers import (
     get_polynomial_decay_schedule_with_warmup,
     get_cosine_schedule_with_warmup,
 )
-from vilt.modules.dist_utils import all_gather
 from vilt.modules.objectives import compute_irtr_recall
-from vilt.gadgets.my_metrics import (
-    Accuracy,
-    VQAScore,
-    Scalar,
-    F1_Score,
-    AUROC,
-    Scalar2,
-    check,
-)
+from vilt.gadgets.my_metrics import Accuracy, Scalar, F1_Score, AUROC
 import os
 
 
@@ -67,7 +58,6 @@ def epoch_wrapup(pl_module):
 
     if pl_module.hparams.config["get_recall_metric"] and not pl_module.training:
         (ir_r1, ir_r5, ir_r10, tr_r1, tr_r5, tr_r10) = compute_irtr_recall(pl_module)
-        print((ir_r1, ir_r5, ir_r10, tr_r1, tr_r5, tr_r10), pl_module.global_step)
         pl_module.logger.experiment.add_scalar(
             "recalls/ir_r1", ir_r1, pl_module.global_step
         )
@@ -287,19 +277,5 @@ def set_schedule(pl_module):
         )
 
     sched = {"scheduler": scheduler, "interval": "step"}
-
-    # # Debugging: Check the parameter groups
-    # for i, group in enumerate(optimizer_grouped_parameters):
-    #     param_ids = [id(p) for p in group['params']]
-    #     print(f"Params in group {i}: {[n for n, p in pl_module.named_parameters() if id(p) in param_ids]}")
-
-    # for n, p in pl_module.named_parameters():
-    #     if p.grad is not None:
-    #         print(f"Gradient for {n}: {p.grad.norm()}")
-
-    # print(f"Optimizer: {optimizer}")
-    # print(f"Scheduler: {scheduler}")
-
-    # print("the lr is: ", lr)
 
     return ([optimizer], [sched])
